@@ -9,7 +9,8 @@ import "mapbox-gl/dist/mapbox-gl.css";
 // Grab the access token from your Mapbox account
 // I typically like to store sensitive things like this
 // in a .env file
-mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
+mapboxgl.accessToken =
+  "pk.eyJ1IjoiY3ByYWthc2gxIiwiYSI6ImNsZzZpNXBpMjBkZzkzaHFyMm83OGQyN3YifQ.5BnzbS1hsEGKg95hwpbQ7Q";
 
 const Mapbox = ({ filteredCampgrounds, setFilteredCampgrounds }) => {
   const mapContainer = useRef();
