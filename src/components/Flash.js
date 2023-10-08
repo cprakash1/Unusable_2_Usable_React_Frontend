@@ -1,12 +1,20 @@
-import React from "react";
+import React, { useContext } from "react";
+import { GlobalContext } from "../context/GlobalState";
 
-const Flash = (success, error) => {
+const Flash = () => {
+  const { success, error, deleteError, deleteSuccess } =
+    useContext(GlobalContext);
+  setTimeout(() => {
+    deleteError();
+    deleteSuccess();
+  }, 10000);
   return (
-    <div>
+    <div style={{ margin: "0px" }}>
       {success && success.length !== 0 ? (
         <div
           className="alert alert-success alert-dismissible fade show"
           role="alert"
+          style={{ margin: "0px" }}
         >
           {success}
           <button
@@ -14,6 +22,7 @@ const Flash = (success, error) => {
             className="btn-close"
             data-bs-dismiss="alert"
             aria-label="Close"
+            style={{ margin: "0px" }}
           ></button>
         </div>
       ) : null}
@@ -21,6 +30,7 @@ const Flash = (success, error) => {
         <div
           className="alert alert-danger alert-dismissible fade show"
           role="alert"
+          style={{ margin: "0px" }}
         >
           {error}
           <button
@@ -28,6 +38,7 @@ const Flash = (success, error) => {
             className="btn-close"
             data-bs-dismiss="alert"
             aria-label="Close"
+            style={{ margin: "0px" }}
           ></button>
         </div>
       ) : null}

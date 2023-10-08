@@ -4,7 +4,7 @@ import AppReducer from "./AppReducer";
 import { useNavigate } from "react-router-dom";
 
 const axiosInstance = axios.create({
-  baseURL: "http://127.0.0.1:80", // Replace with your API base URL
+  baseURL: "https://unusable-2-usable-react-backend.onrender.com", // Replace with your API base URL
   timeout: 60000, // Set a default timeout (optional)
 });
 
@@ -13,6 +13,7 @@ const initialState = {
   error: null,
   loading: true,
   user: null,
+  success: null,
 };
 
 //creating context
@@ -23,6 +24,18 @@ export const GlobalProvider = ({ children }) => {
   const navigate = useNavigate();
 
   //actions
+
+  function deleteError() {
+    dispatch({
+      type: "DELETE_ERROR",
+    });
+  }
+
+  function deleteSuccess() {
+    dispatch({
+      type: "DELETE_SUCCESS",
+    });
+  }
 
   // GET ALL CAMPGROUNDS
   async function getCampgrounds() {
@@ -64,17 +77,23 @@ export const GlobalProvider = ({ children }) => {
       if (res.data.success === false) {
         throw new Error(res.data.message);
       } else {
+        localStorage.setItem("access_token", res.data.access_token);
         dispatch({
           type: "LOGIN_SUCCESS",
           payload: res.data,
+        });
+        dispatch({
+          type: "SET_SUCCESS",
+          payload: "Login Successfull",
         });
         navigate("/items");
       }
     } catch (err) {
       dispatch({
-        type: "LOGIN_ERROR",
+        type: "CAMPGROUND_ERROR",
         payload: err.response.data.error,
       });
+      console.log(state.error, err.response.data.error);
       console.log(err);
       navigate("/login");
     }
@@ -101,8 +120,13 @@ export const GlobalProvider = ({ children }) => {
 
   // LOGOUT
   function logout() {
+    localStorage.removeItem("access_token");
     dispatch({
       type: "LOGOUT",
+    });
+    dispatch({
+      type: "SET_SUCCESS",
+      payload: "LogOut Successfull",
     });
   }
 
@@ -131,6 +155,10 @@ export const GlobalProvider = ({ children }) => {
         dispatch({
           type: "POST_CAMPGROUND",
           payload: res.data.item,
+        });
+        dispatch({
+          type: "SET_SUCCESS",
+          payload: "Campground Added Successfully",
         });
         navigate(`/items/${res.data.item._id}`);
       }
@@ -171,6 +199,10 @@ export const GlobalProvider = ({ children }) => {
           type: "UPDATE_CAMPGROUND",
           payload: res.data.item,
         });
+        dispatch({
+          type: "SET_SUCCESS",
+          payload: "Campground Updated Successfully",
+        });
         navigate(`/items/${obj.id}`);
       }
     } catch (err) {
@@ -199,6 +231,10 @@ export const GlobalProvider = ({ children }) => {
           type: "DELETE_CAMPGROUND",
           payload: id,
         });
+        dispatch({
+          type: "SET_SUCCESS",
+          payload: "Campground Deleted Successfully",
+        });
         navigate("/items");
       }
     } catch (err) {
@@ -226,6 +262,10 @@ export const GlobalProvider = ({ children }) => {
           type: "CREATE_REVIEW",
           payload: res.data.item,
         });
+        dispatch({
+          type: "SET_SUCCESS",
+          payload: "Review Added Successfully",
+        });
       }
     } catch (err) {
       dispatch({
@@ -250,6 +290,10 @@ export const GlobalProvider = ({ children }) => {
           type: "DELETE_REVIEW",
           payload: res.data.item,
         });
+        dispatch({
+          type: "SET_SUCCESS",
+          payload: "Review Deleted Successfully",
+        });
       }
     } catch (err) {
       dispatch({
@@ -261,6 +305,166 @@ export const GlobalProvider = ({ children }) => {
     }
   }
 
+  //Set user from access token
+  async function setUserFromAccessToken() {
+    if (state.user || localStorage.getItem("access_token") === null) {
+      return;
+    }
+    try {
+      const data = { access_token: localStorage.getItem("access_token") };
+      const res = await axiosInstance.post("/getuser", data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.data.success === false) {
+        throw new Error(res.data.message);
+      } else {
+        dispatch({
+          type: "LOGIN_SUCCESS",
+          payload: res.data,
+        });
+        // dispatch({
+        //   type: "SET_SUCCESS",
+        //   payload: "Successfully Loaded Previous Session",
+        // });
+      }
+    } catch (err) {
+      dispatch({
+        type: "CAMPGROUND_ERROR",
+        payload: err.response.data.error,
+      });
+      console.log(err);
+      localStorage.removeItem("access_token");
+      navigate(`/login`);
+    }
+  }
+
+  async function getRegisterToken(obj) {
+    try {
+      const res = await axiosInstance.post("/registerToken", obj, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.data.success === false) {
+        throw new Error(res.data.message);
+      } else {
+        dispatch({
+          type: "SET_SUCCESS",
+          payload: "Registration Token Sent Successfully",
+        });
+        return res.data.registerToken;
+      }
+    } catch (err) {
+      dispatch({
+        type: "CAMPGROUND_ERROR",
+        payload: err.response.data.error,
+      });
+      console.log(err);
+      window.location.reload();
+    }
+  }
+
+  async function register(obj) {
+    try {
+      const res = await axiosInstance.post("/register", obj, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.data.success === false) {
+        throw new Error(res.data.message);
+      } else {
+        localStorage.setItem("access_token", res.data.access_token);
+        dispatch({
+          type: "LOGIN_SUCCESS",
+          payload: res.data,
+        });
+        dispatch({
+          type: "SET_SUCCESS",
+          payload: "Registration Successfull and Logging You In...",
+        });
+        navigate("/items");
+      }
+    } catch (err) {
+      dispatch({
+        type: "CAMPGROUND_ERROR",
+        payload: err.response.data.error,
+      });
+      console.log(err);
+      window.location.reload();
+    }
+  }
+
+  async function forgotPasswordToken(obj) {
+    try {
+      const res = await axiosInstance.post("/forgotPasswordToken", obj, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(res.data);
+      if (res.data.success === false) {
+        throw new Error(res.data.message);
+      } else {
+        dispatch({
+          type: "SET_SUCCESS",
+          payload: "Password Reset Token Sent Successfully",
+        });
+        return res.data.forgotPasswordToken;
+      }
+    } catch (err) {
+      dispatch({
+        type: "CAMPGROUND_ERROR",
+        payload: err.response.data.error,
+      });
+      console.log(err);
+      window.location.reload();
+    }
+  }
+
+  const forgotPassword = async (obj) => {
+    try {
+      const res = await axiosInstance.post("/forgotPassword", obj, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(res.data);
+      if (res.data.success === false) {
+        throw new Error(res.data.message);
+      } else {
+        dispatch({
+          type: "SET_SUCCESS",
+          payload: "Password Reset Successfully",
+        });
+        navigate("/login");
+      }
+    } catch (err) {
+      dispatch({
+        type: "CAMPGROUND_ERROR",
+        payload: err.response.data.error,
+      });
+      console.log(err);
+      window.location.reload();
+    }
+  };
+
+  function setSuccess(message) {
+    dispatch({
+      type: "SET_SUCCESS",
+      payload: message,
+    });
+  }
+
+  function setError(message) {
+    dispatch({
+      type: "CAMPGROUND_ERROR",
+      payload: message,
+    });
+  }
+
   return (
     <GlobalContext.Provider
       value={{
@@ -268,6 +472,7 @@ export const GlobalProvider = ({ children }) => {
         error: state.error,
         loading: state.loading,
         user: state.user,
+        success: state.success,
         getCampgrounds,
         login,
         getACampground,
@@ -277,6 +482,15 @@ export const GlobalProvider = ({ children }) => {
         deleteACampground,
         createAReview,
         deleteAReview,
+        setUserFromAccessToken,
+        getRegisterToken,
+        register,
+        forgotPasswordToken,
+        forgotPassword,
+        deleteError,
+        deleteSuccess,
+        setError,
+        setSuccess,
       }}
     >
       {children}

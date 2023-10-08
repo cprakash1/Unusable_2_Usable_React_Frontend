@@ -1,12 +1,12 @@
 import React, { useContext, useEffect } from "react";
 import Navbar from "../components/Navbar";
-import Login from "../components/Login";
 import UFooter from "../components/Ufooter";
+import Register from "../components/Register";
 import { GlobalContext } from "../context/GlobalState";
 import { useNavigate } from "react-router-dom";
 import Flash from "../components/Flash";
 
-const LoginPage = () => {
+const RegisterPage = () => {
   const { user, setSuccess } = useContext(GlobalContext);
   const navigate = useNavigate();
   useEffect(() => {
@@ -19,10 +19,10 @@ const LoginPage = () => {
     <div>
       <Navbar />
       <Flash />
-      <Login />
+      <Register />
       <UFooter />
     </div>
   );
 };
 
-export default LoginPage;
+export default RegisterPage;

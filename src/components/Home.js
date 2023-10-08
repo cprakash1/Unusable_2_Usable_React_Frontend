@@ -1,11 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useContext } from "react";
 import { GlobalContext } from "../context/GlobalState";
 import { Link } from "react-router-dom";
 
-const Home = () => {
+const Home = ({ filteredCampgrounds, setFilteredCampgrounds }) => {
   const { campgrounds, getCampgrounds } = useContext(GlobalContext);
+  const [search, setSearch] = useState("");
+
   getCampgrounds();
+
+  useEffect(() => {
+    setFilteredCampgrounds(campgrounds);
+  }, [campgrounds]);
+
+  useEffect(() => {
+    setFilteredCampgrounds(
+      campgrounds.filter(
+        (c) =>
+          c.title.toLowerCase().includes(search.toLowerCase()) ||
+          c.location.toLowerCase().includes(search.toLowerCase()) ||
+          c.description.toLowerCase().includes(search.toLowerCase()) ||
+          c.price.toString().includes(search.toLowerCase())
+      )
+    );
+  }, [search]);
+
   return (
     <div className="container">
       {/* <div id="map" style={{ width: "100%", height: "500px" }}></div> */}
@@ -25,20 +44,28 @@ const Home = () => {
           placeholder="Search"
           aria-label="Search"
           aria-describedby="search-addon"
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+          }}
         />
         <button
           type="button"
           className="btn btn-outline-primary"
           id="search-button"
+          onClick={(e) => {
+            e.preventDefault();
+            setSearch("");
+          }}
         >
-          search
+          Clear
         </button>
       </div>
 
       <br />
       <br />
       <div id="cp">
-        {campgrounds.map((c, id) => {
+        {filteredCampgrounds.map((c, id) => {
           return (
             <div className="card mb-3" key={id}>
               <div className="row">

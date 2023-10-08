@@ -3,10 +3,11 @@ import { GlobalContext } from "../context/GlobalState";
 import { useNavigate, Link } from "react-router-dom";
 
 const New = () => {
-  const { user, postACampground } = useContext(GlobalContext);
+  const { user, postACampground, setError } = useContext(GlobalContext);
   const navigate = useNavigate();
   useEffect(() => {
     if (user === null) {
+      setError("You are not logged in!");
       navigate("/login");
     }
   }, []);

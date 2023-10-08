@@ -12,10 +12,12 @@ const Edit = () => {
   const [deleteimage, setDeleteimage] = useState([]);
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getACampground, updateACampground, user } = useContext(GlobalContext);
+  const { getACampground, updateACampground, user, setError } =
+    useContext(GlobalContext);
   useEffect(() => {
     getACampground(id).then((item) => {
       if (user !== item.author._id) {
+        setError("You are not authorized to edit this item!");
         navigate(`/items/${id}`);
       }
       setTitle(item.title);

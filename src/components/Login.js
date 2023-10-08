@@ -1,11 +1,17 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { GlobalContext } from "../context/GlobalState";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { user, login } = useContext(GlobalContext);
+  const { login, setUserFromAccessToken } = useContext(GlobalContext);
+  useEffect(() => {
+    if (localStorage.getItem("access_token") !== null) {
+      // window.location.href = "/items";
+      setUserFromAccessToken();
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="container" style={{ height: "100vh" }}>

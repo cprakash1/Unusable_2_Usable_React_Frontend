@@ -61,5 +61,20 @@ export default (state, action) => {
         ),
         loading: false,
       };
+    case "DELETE_SUCCESS":
+      return {
+        ...state,
+        success: null,
+      };
+    case "DELETE_ERROR":
+      return {
+        ...state,
+        error: null,
+      };
+    case "SET_SUCCESS":
+      return {
+        ...state,
+        success: action.payload,
+      };
   }
 };

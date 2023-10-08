@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { GlobalContext } from "../context/GlobalState";
+import Flash from "../components/Flash";
 
 const MainPage = () => {
   const { user } = useContext(GlobalContext);
@@ -26,7 +27,7 @@ const MainPage = () => {
                   <Link className="nav-link" to="/login">
                     Login
                   </Link>
-                  <Link className="nav-link" to="/register1">
+                  <Link className="nav-link" to="/register">
                     Register
                   </Link>
                 </>
@@ -34,6 +35,7 @@ const MainPage = () => {
             </nav>
           </div>
         </header>
+        <Flash />
         <main className="px-3">
           <h1>Unusable2Usable</h1>
           <br />
