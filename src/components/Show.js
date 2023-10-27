@@ -3,6 +3,7 @@ import { GlobalContext } from "../context/GlobalState";
 import { useParams, Link } from "react-router-dom";
 import MapboxShow from "./MapboxShow";
 import CrouselShow from "./CrouselShow";
+import socket from "../context/socket";
 
 const Show = () => {
   const {
@@ -19,6 +20,19 @@ const Show = () => {
       setCamp(item);
     });
   }, []);
+  useEffect(() => {
+    socket.on("singleCampgroundChanged", (id) => {
+      if (id && camp && id === camp._id) {
+        getACampground(id).then((item) => {
+          setCamp(item);
+        });
+      }
+    });
+    return () => {
+      // Clean up event listeners when the component unmounts
+      socket.off("singleCampgroundChanged");
+    };
+  }, [camp]);
   const [body, setBody] = useState("");
   const [cost, setCost] = useState("");
   // console.log(camp);
@@ -134,6 +148,8 @@ const Show = () => {
                     await getACampground(id).then((item) => {
                       setCamp(item);
                     });
+                    setBody("");
+                    setCost("");
                   }}
                 >
                   Submit

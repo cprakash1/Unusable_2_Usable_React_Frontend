@@ -1,10 +1,12 @@
-import React, { useReducer, createContext } from "react";
+import React, { useReducer, createContext, useEffect } from "react";
 import axios from "axios";
 import AppReducer from "./AppReducer";
 import { useNavigate } from "react-router-dom";
+import socket from "./socket";
 
 const axiosInstance = axios.create({
   baseURL: "https://unusable-2-usable-react-backend.onrender.com", // Replace with your API base URL
+  // baseURL: process.env.REACT_APP_BASE_URL, // Replace with your API base URL
   timeout: 60000, // Set a default timeout (optional)
 });
 
@@ -22,6 +24,27 @@ export const GlobalContext = createContext(initialState);
 export const GlobalProvider = ({ children }) => {
   const [state, dispatch] = useReducer(AppReducer, initialState);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("connected");
+    });
+    socket.on("disconnect", () => {
+      console.log("disconnected");
+    });
+    socket.on("campgroundsChanged", () => {
+      getCampgrounds();
+    });
+    socket.on("Run", () => {
+      console.log("RUN");
+    });
+    return () => {
+      // Clean up event listeners when the component unmounts
+      socket.off("campgroundsChanged");
+      socket.off("connect");
+      socket.off("disconnect");
+    };
+  }, []);
 
   //actions
 
@@ -161,6 +184,7 @@ export const GlobalProvider = ({ children }) => {
           payload: "Campground Added Successfully",
         });
         navigate(`/items/${res.data.item._id}`);
+        socket.emit("campgroundsChanged");
       }
     } catch (err) {
       dispatch({
@@ -204,6 +228,8 @@ export const GlobalProvider = ({ children }) => {
           payload: "Campground Updated Successfully",
         });
         navigate(`/items/${obj.id}`);
+        socket.emit("campgroundsChanged");
+        socket.emit("singleCampgroundChanged", obj.id);
       }
     } catch (err) {
       console.log(err);
@@ -236,6 +262,8 @@ export const GlobalProvider = ({ children }) => {
           payload: "Campground Deleted Successfully",
         });
         navigate("/items");
+        socket.emit("campgroundsChanged");
+        socket.emit("singleCampgroundChanged", id);
       }
     } catch (err) {
       dispatch({
@@ -266,6 +294,7 @@ export const GlobalProvider = ({ children }) => {
           type: "SET_SUCCESS",
           payload: "Review Added Successfully",
         });
+        socket.emit("singleCampgroundChanged", id);
       }
     } catch (err) {
       dispatch({
@@ -294,6 +323,7 @@ export const GlobalProvider = ({ children }) => {
           type: "SET_SUCCESS",
           payload: "Review Deleted Successfully",
         });
+        socket.emit("singleCampgroundChanged", id);
       }
     } catch (err) {
       dispatch({
