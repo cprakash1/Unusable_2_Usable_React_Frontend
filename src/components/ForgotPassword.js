@@ -23,7 +23,7 @@ const ForgotPassword = () => {
   }, [user]);
 
   return (
-    <div className="container mt-5" style={{ height: "100vh" }}>
+    <div className="container mt-2">
       <h1>ForgotPassword</h1>
       <form
         action="/forgotpassword"

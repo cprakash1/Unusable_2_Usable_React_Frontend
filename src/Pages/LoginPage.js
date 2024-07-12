@@ -1,10 +1,7 @@
 import React, { useContext, useEffect } from "react";
-import Navbar from "../components/Navbar";
 import Login from "../components/Login";
-import UFooter from "../components/Ufooter";
 import { GlobalContext } from "../context/GlobalState";
 import { useNavigate } from "react-router-dom";
-import Flash from "../components/Flash";
 
 const LoginPage = () => {
   const { user, setSuccess } = useContext(GlobalContext);
@@ -16,12 +13,9 @@ const LoginPage = () => {
     }
   }, [user]);
   return (
-    <div>
-      <Navbar />
-      <Flash />
+    <>
       <Login />
-      <UFooter />
-    </div>
+    </>
   );
 };
 

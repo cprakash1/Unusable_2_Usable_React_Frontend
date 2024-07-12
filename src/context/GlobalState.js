@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import socket from "./socket";
 
 const axiosInstance = axios.create({
+  // baseURL: "http://127.0.0.1:80", // Replace with your API base URL
   baseURL: "https://unusable-2-usable-react-backend.onrender.com", // Replace with your API base URL
   // baseURL: process.env.REACT_APP_BASE_URL, // Replace with your API base URL
   timeout: 60000, // Set a default timeout (optional)
@@ -13,7 +14,7 @@ const axiosInstance = axios.create({
 const initialState = {
   campgrounds: [],
   error: null,
-  loading: true,
+  loading: false,
   user: null,
   success: null,
 };
@@ -24,6 +25,9 @@ export const GlobalContext = createContext(initialState);
 export const GlobalProvider = ({ children }) => {
   const [state, dispatch] = useReducer(AppReducer, initialState);
   const navigate = useNavigate();
+  useEffect(() => {
+    console.log(state.user);
+  }, [state.user]);
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -60,12 +64,25 @@ export const GlobalProvider = ({ children }) => {
     });
   }
 
+  function deleteLoading() {
+    dispatch({
+      type: "DELETE_LOADING",
+    });
+  }
+
+  function setLoading() {
+    dispatch({
+      type: "SET_LOADING",
+    });
+  }
+
   // GET ALL CAMPGROUNDS
   async function getCampgrounds() {
     if (state.campgrounds.length !== 0) {
       return;
     }
     try {
+      // setLoading();
       const res = await axiosInstance.get("/items");
       // console.log(res.response.data);
       if (res.data.success === false) {
@@ -125,7 +142,9 @@ export const GlobalProvider = ({ children }) => {
   // GET A CAMPGROUND
   async function getACampground(id) {
     try {
+      setLoading();
       const res = await axiosInstance.get(`/items/${id}`);
+      deleteLoading();
       if (res.data.success === false) {
         throw new Error(res.data.message);
       } else {
@@ -167,11 +186,13 @@ export const GlobalProvider = ({ children }) => {
       formData.append("description", obj.description);
       formData.append("user", state.user);
 
+      setLoading();
       const res = await axiosInstance.post("/items", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      deleteLoading();
       if (res.data.success === false) {
         throw new Error(res.data.message);
       } else {
@@ -211,11 +232,13 @@ export const GlobalProvider = ({ children }) => {
       formData.append("user", state.user);
       formData.append("id", obj.id);
 
+      setLoading();
       const res = await axiosInstance.put(`/items/${obj.id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      deleteLoading();
       if (res.data.success === false) {
         throw new Error(res.data.message);
       } else {
@@ -245,6 +268,7 @@ export const GlobalProvider = ({ children }) => {
   // DELETE A CAMPGROUND
   async function deleteACampground(id, author) {
     try {
+      setLoading();
       if (state.user !== author._id) {
         navigate("/items/" + id);
         return;

@@ -12,6 +12,7 @@ import RegisterPage from "./Pages/RegisterPage";
 import { useContext, useEffect } from "react";
 import { GlobalContext } from "./context/GlobalState";
 import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
+import MainLayout from "./Pages/MainLayout";
 
 function App() {
   const { setUserFromAccessToken } = useContext(GlobalContext);
@@ -21,15 +22,17 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" exact element={<MainPage />} />
-        <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/items" element={<HomePage />} />
-        <Route path="/items/new" element={<NewPage />} />
-        <Route path="/items/:id" element={<ShowPage />} />
-        <Route path="/items/:id/edit" element={<EditPage />} />
-        <Route path="/logout" element={<LogoutPage />} />
+        <Route path="/" element={<MainLayout />}>
+          <Route path="" exact element={<MainPage />} />
+          <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/items" element={<HomePage />} />
+          <Route path="/items/new" element={<NewPage />} />
+          <Route path="/items/:id" element={<ShowPage />} />
+          <Route path="/items/:id/edit" element={<EditPage />} />
+          <Route path="/logout" element={<LogoutPage />} />
+        </Route>
       </Routes>
     </>
   );

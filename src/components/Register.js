@@ -11,7 +11,7 @@ const Register = () => {
   const { getRegisterToken, register } = useContext(GlobalContext);
 
   return (
-    <div className="container" style={{ height: "100vh" }}>
+    <div className="container">
       <h1>Register</h1>
       <form
         action="/register1"

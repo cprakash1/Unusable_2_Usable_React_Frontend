@@ -65,16 +65,29 @@ export default (state, action) => {
       return {
         ...state,
         success: null,
+        loading: false,
       };
     case "DELETE_ERROR":
       return {
         ...state,
         error: null,
+        loading: false,
       };
     case "SET_SUCCESS":
       return {
         ...state,
         success: action.payload,
+        loading: false,
+      };
+    case "DELETE_LOADING":
+      return {
+        ...state,
+        loading: false,
+      };
+    case "SET_LOADING":
+      return {
+        ...state,
+        loading: true,
       };
   }
 };

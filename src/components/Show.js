@@ -68,7 +68,7 @@ const Show = () => {
               <div className="card-body">
                 <Link
                   to={"/items/" + camp._id + "/edit"}
-                  className="btn btn-info"
+                  className="btn btn-info mx-2"
                 >
                   EDIT
                 </Link>
@@ -78,7 +78,7 @@ const Show = () => {
                   method="post"
                 >
                   <button
-                    className="btn btn-danger"
+                    className="btn btn-danger mx-2"
                     onClick={(e) => {
                       e.preventDefault();
                       deleteACampground(camp._id, camp.author);
@@ -159,7 +159,18 @@ const Show = () => {
           ) : null}
           <br />
           <br />
-          <div className="mb-3">
+          <div
+            className="mb-3"
+            style={
+              user && camp.reviews && camp.reviews.length > 3
+                ? {
+                    overflowY: "scroll",
+                    height: "400px",
+                    scrollbarWidth: "thin",
+                  }
+                : null
+            }
+          >
             {camp.reviews.map((c, index) => {
               if (user && (c.author._id === user || camp.author._id === user)) {
                 return (
