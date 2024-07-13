@@ -8,9 +8,7 @@ import Loading from "../components/Loading";
 
 const MainLayout = () => {
   const { loading } = useContext(GlobalContext);
-  useEffect(() => {
-    console.log(loading, "loading");
-  }, [loading]);
+
   return (
     <div>
       <Navbar />

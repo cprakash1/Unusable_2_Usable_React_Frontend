@@ -25,9 +25,9 @@ export const GlobalContext = createContext(initialState);
 export const GlobalProvider = ({ children }) => {
   const [state, dispatch] = useReducer(AppReducer, initialState);
   const navigate = useNavigate();
-  useEffect(() => {
-    console.log(state.user);
-  }, [state.user]);
+  // useEffect(() => {
+  //   console.log(state.user);
+  // }, [state.user]);
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -330,6 +330,75 @@ export const GlobalProvider = ({ children }) => {
     }
   }
 
+  async function sendChat(id, obj) {
+    try {
+      const res = await axiosInstance.post(`/items/${id}/chats`, obj, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.data.success === false) {
+        throw new Error(res.data.message);
+      } else {
+        dispatch({
+          type: "SET_SUCCESS",
+          payload: "Review Added Successfully",
+        });
+        socket.emit("singleCampgroundChanged", id);
+      }
+    } catch (err) {
+      dispatch({
+        type: "CAMPGROUND_ERROR",
+        payload: err.response.data.error,
+      });
+      console.log(err);
+      navigate(`/items/${id}`);
+    }
+  }
+  async function getChats(id, obj) {
+    try {
+      const res = await axiosInstance.post(`/items/${id}/chats/getChat`, obj, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.data.success === false) {
+        throw new Error(res.data.message);
+      } else {
+        return res.data;
+      }
+    } catch (err) {
+      dispatch({
+        type: "CAMPGROUND_ERROR",
+        payload: err.response.data.error,
+      });
+      console.log(err);
+      navigate(`/items/${id}`);
+    }
+  }
+
+  async function getAllChatsForSeller(id, obj) {
+    try {
+      const res = await axiosInstance.post(`/items/${id}/chats/allChat`, obj, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.data.success === false) {
+        throw new Error(res.data.message);
+      } else {
+        return res.data;
+      }
+    } catch (err) {
+      dispatch({
+        type: "CAMPGROUND_ERROR",
+        payload: err.response.data.error,
+      });
+      console.log(err);
+      navigate(`/items/${id}`);
+    }
+  }
+
   //DELETE A REVIEW
   async function deleteAReview(id, reviewId) {
     try {
@@ -458,7 +527,7 @@ export const GlobalProvider = ({ children }) => {
           "Content-Type": "application/json",
         },
       });
-      console.log(res.data);
+      // console.log(res.data);
       if (res.data.success === false) {
         throw new Error(res.data.message);
       } else {
@@ -485,7 +554,7 @@ export const GlobalProvider = ({ children }) => {
           "Content-Type": "application/json",
         },
       });
-      console.log(res.data);
+      // console.log(res.data);
       if (res.data.success === false) {
         throw new Error(res.data.message);
       } else {
@@ -545,6 +614,9 @@ export const GlobalProvider = ({ children }) => {
         deleteSuccess,
         setError,
         setSuccess,
+        sendChat,
+        getChats,
+        getAllChatsForSeller,
       }}
     >
       {children}

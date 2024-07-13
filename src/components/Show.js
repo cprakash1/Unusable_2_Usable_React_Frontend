@@ -4,6 +4,8 @@ import { useParams, Link } from "react-router-dom";
 import MapboxShow from "./MapboxShow";
 import CrouselShow from "./CrouselShow";
 import socket from "../context/socket";
+import ChatBox from "./ChatBox";
+import ChatBoxAdmin from "./ChatBoxAdmin";
 
 const Show = () => {
   const {
@@ -34,7 +36,6 @@ const Show = () => {
     };
   }, [camp]);
   const [body, setBody] = useState("");
-  const [cost, setCost] = useState("");
   // console.log(camp);
   if (!camp) return null;
   return (
@@ -91,13 +92,7 @@ const Show = () => {
             ) : null}
             <div className="card-footer text-muted">2 days ago</div>
           </div>
-        </div>
-        <div className="col-6">
-          <div className="mt-3">
-            <MapboxShow camp={camp} />
-          </div>
-          {/* <div id="map" style={{ height: "400px" }}></div> */}
-          {user && !(camp.author._id === user) ? (
+          {user ? (
             <div className="mb-3">
               <form
                 action="/items/<%= camp._id %>/reviews"
@@ -108,23 +103,8 @@ const Show = () => {
                 <br />
                 <br />
                 <div className="mb-3">
-                  <h2>Are You Interested To Buy? </h2>
-                  <label htmlFor="">Cost to Offer:</label>
-                  <br />
-                  <input
-                    className="form-control"
-                    type="number"
-                    name="review[cost]"
-                    id="cost"
-                    value={cost}
-                    onChange={(e) => {
-                      setCost(e.target.value);
-                    }}
-                    required
-                  />
-                  <br />
                   <label className="form-label" htmlFor="body">
-                    Contacts
+                    <h2> Write a Review</h2>
                   </label>
                   <textarea
                     className="form-control"
@@ -144,12 +124,11 @@ const Show = () => {
                   className="btn btn-success"
                   onClick={async (e) => {
                     e.preventDefault();
-                    await createAReview(id, { body, cost, user });
+                    await createAReview(id, { body, user });
                     await getACampground(id).then((item) => {
                       setCamp(item);
                     });
                     setBody("");
-                    setCost("");
                   }}
                 >
                   Submit
@@ -172,17 +151,14 @@ const Show = () => {
             }
           >
             {camp.reviews.map((c, index) => {
-              if (user && (c.author._id === user || camp.author._id === user)) {
+              if (user) {
                 return (
                   <div className="card mb-3" key={index}>
                     <div className="card-body">
                       <h5 className="card-title">
-                        <b>CostOffered </b>: {c.cost}
+                        <b>User: {c.author.username} </b>
                       </h5>
-                      <h6 className="card-subtitle text-muted">
-                        User: {c.author.username}{" "}
-                      </h6>
-                      <p className="card-text">Contacts: {c.body} </p>
+                      <p className="card-text">Reviews: {c.body} </p>
                       {user && c.author._id === user ? (
                         <form
                           action="/items/<%= camp._id %>/reviews/<%= c._id %>?_method=DELETE"
@@ -208,6 +184,20 @@ const Show = () => {
               }
             })}
           </div>
+        </div>
+        <div className="col-6">
+          <div className="mt-3">
+            <MapboxShow camp={camp} />
+          </div>
+          <br />
+          <br />
+          {user && camp.author._id !== user ? (
+            <ChatBox author={camp.author} campId={id} camp={camp} />
+          ) : (
+            <>
+              <ChatBoxAdmin campId={id} author={camp.author} camp={camp} />
+            </>
+          )}
         </div>
       </div>
     </div>
