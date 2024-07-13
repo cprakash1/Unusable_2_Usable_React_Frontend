@@ -191,13 +191,14 @@ const Show = () => {
           </div>
           <br />
           <br />
-          {user && camp.author._id !== user ? (
-            <ChatBox author={camp.author} campId={id} camp={camp} />
-          ) : (
-            <>
-              <ChatBoxAdmin campId={id} author={camp.author} camp={camp} />
-            </>
-          )}
+          {user &&
+            (camp.author._id !== user ? (
+              <ChatBox author={camp.author} campId={id} camp={camp} />
+            ) : (
+              <>
+                <ChatBoxAdmin campId={id} author={camp.author} camp={camp} />
+              </>
+            ))}
         </div>
       </div>
     </div>
