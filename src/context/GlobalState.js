@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom";
 import socket from "./socket";
 
 const axiosInstance = axios.create({
-  // baseURL: "http://127.0.0.1:80", // Replace with your API base URL
-  baseURL: "https://unusable-2-usable-react-backend.onrender.com", // Replace with your API base URL
+  baseURL: "http://127.0.0.1:80", // Replace with your API base URL
+  // baseURL: "https://unusable-2-usable-react-backend.onrender.com", // Replace with your API base URL
   // baseURL: process.env.REACT_APP_BASE_URL, // Replace with your API base URL
   timeout: 60000, // Set a default timeout (optional)
 });
